@@ -36,6 +36,8 @@ if ! git rev-parse --git-dir > /dev/null 2>&1; then
     exit 1
 fi
 
+
+
 # Verificar se há mudanças para commit
 if git diff --quiet && git diff --cached --quiet; then
     print_warning "Não há mudanças para fazer commit."

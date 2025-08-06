@@ -1,0 +1,12 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const sistemaController_1 = require("../controllers/sistemaController");
+const router = (0, express_1.Router)();
+router.post('/', sistemaController_1.createSistema);
+router.get('/', sistemaController_1.getSistemas);
+router.get('/:id', sistemaController_1.getSistemaById);
+router.put('/:id', sistemaController_1.updateSistema);
+router.patch('/:id', sistemaController_1.updateSistema);
+router.delete('/:id', sistemaController_1.deleteSistema);
+exports.default = router;
