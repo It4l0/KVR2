@@ -4,7 +4,9 @@ import { connectDB, AppDataSource } from './config/database';
 import userRoutes from './routes/userRoutes';
 import sistemaRoutes from './routes/sistemaRoutes';
 import authRoutes from './routes/authRoutes';
+import backupRoutes from './routes/backupRoutes';
 import { authenticateJWT } from './middlewares/authMiddleware';
+import equipmentRoutes from './routes/equipmentRoutes';
 
 export const createApp = async (): Promise<Application> => {
   await connectDB();
@@ -20,6 +22,8 @@ export const createApp = async (): Promise<Application> => {
   // Rotas protegidas
   app.use('/api/users', authenticateJWT, userRoutes);
   app.use('/api/sistemas', authenticateJWT, sistemaRoutes);
+  app.use('/api/backup', authenticateJWT, backupRoutes);
+  app.use('/api/equipamentos', authenticateJWT, equipmentRoutes);
   
   app.get('/', (req, res) => {
     res.json({ message: 'API funcionando!' });

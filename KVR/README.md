@@ -10,11 +10,15 @@ Projeto backend para sistema de autenticação e gerenciamento de usuários
 - PostgreSQL
 - JWT
 
-## Configuração
-1. Criar arquivo `.env` com as variáveis de ambiente
+## Configuração (Desenvolvimento)
+1. Criar arquivo `.env` com as variáveis de ambiente (ver seção abaixo)
 2. Executar `npm install`
-3. Rodar migrations
-4. Iniciar servidor com `npm run dev`
+3. Iniciar em modo desenvolvimento: `npm run dev`
+
+Observações importantes:
+- O projeto usa migrations oficiais do TypeORM (sem `synchronize`).
+- Ao inicializar, o `DataSource` está configurado com `migrationsRun: true`, então as migrations pendentes serão aplicadas automaticamente.
+- Há um seeder idempotente para criar/atualizar um usuário admin inicial.
 
 ## Endpoints
 
@@ -34,10 +38,14 @@ Projeto backend para sistema de autenticação e gerenciamento de usuários
 
 ## Scripts
 
-### Cadastro Interativo
-- `cadastroUsuario.ts` - Cadastra usuários via terminal
-- `cadastroSistema.ts` - Cadastra sistemas via terminal
-- `buscarUsuario.ts` - Busca usuários por ID ou email
+### Seeds
+- `npm run seed` — Executa o seeder de admin (`src/seeds/seedAdmin.ts`) usando `ts-node-dev`.
+  - Usa `SEED_ADMIN_EMAIL` e `SEED_ADMIN_PASSWORD` se definidos; caso contrário, `admin@example.com` / `admin123`.
+
+### Ferramentas interativas
+- `src/scripts/cadastroUsuario.ts` — Cadastra usuários via terminal (opcional)
+- `src/scripts/cadastroSistema.ts` — Cadastra sistemas via terminal (opcional)
+- `src/scripts/buscarUsuario.ts` — Busca usuários por ID ou email (opcional)
 
 ## Variáveis de Ambiente
 Crie um arquivo `.env` com:
@@ -48,12 +56,42 @@ DB_USER=seu_usuario
 DB_PASS=sua_senha
 DB_NAME=seu_banco
 JWT_SECRET=seu_secreto
+# Opcional (apenas para seed em dev):
+SEED_ADMIN_EMAIL=admin@example.com
+SEED_ADMIN_PASSWORD=admin123
 ```
 
 ## Instalação
 1. `npm install`
 2. Configure o PostgreSQL
 3. `npm run dev` para iniciar
+
+## Execução com Docker Compose (Produção/Dev)
+
+O repositório raiz possui um `docker-compose.yml` que sobe:
+- `gestuser-db` (Postgres) — Porta host 5434 → container 5432
+- `gestuser-backend` (API) — Porta host 3003 → container 3000
+- `gestuser-frontend` (Nginx) — Porta host 8081 → container 80
+
+Comandos:
+- Subir tudo (com rebuild):
+  ```bash
+  docker compose up -d --build
+  ```
+- Ver logs principais:
+  ```bash
+  docker logs -f gestuser-backend
+  docker logs -f gestuser-frontend
+  docker logs -f gestuser-db
+  ```
+
+Pipeline de inicialização do backend no Docker:
+- O TypeORM aplica migrations automaticamente (`migrationsRun: true`).
+- Em seguida, roda o seeder de admin (via `node dist/seeds/seedAdmin.js`).
+
+Importante:
+- Em produção, defina um `JWT_SECRET` forte via variáveis de ambiente.
+- Personalize `SEED_ADMIN_EMAIL` / `SEED_ADMIN_PASSWORD` conforme necessário (somente para ambiente de desenvolvimento; evite manter credenciais padrão em produção).
 
 ## Modelos
 

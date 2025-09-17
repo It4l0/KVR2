@@ -1,0 +1,52 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: gestuser-db
+    environment:
+      POSTGRES_DB: gestuser
+      POSTGRES_USER: gestuser
+      POSTGRES_PASSWORD: gestuser
+    ports:
+      - "5434:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U gestuser -d gestuser"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./KVR
+      dockerfile: Dockerfile.prod
+    image: gestuser-backend:latest
+    container_name: gestuser-backend
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      DB_HOST: db
+      DB_PORT: "5432"
+      DB_USER: gestuser
+      DB_PASS: gestuser
+      DB_NAME: gestuser
+      JWT_SECRET: secret_default
+      PORT: "3000"
+    ports:
+      - "3003:3000"
+
+  frontend:
+    build:
+      context: ./Frontend
+      dockerfile: Dockerfile
+    image: gestuser-frontend:latest
+    container_name: gestuser-frontend
+    depends_on:
+      - backend
+    ports:
+      - "8081:80"
+
+volumes:
+  db_data:

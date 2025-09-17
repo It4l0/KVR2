@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import { Router, RequestHandler } from 'express';
 import { 
   createSistema, 
   getSistemas,
@@ -9,11 +9,11 @@ import {
 
 const router = Router();
 
-router.post('/', createSistema);
-router.get('/', getSistemas);
-router.get('/:id', getSistemaById);
-router.put('/:id', updateSistema);
-router.patch('/:id', updateSistema);
-router.delete('/:id', deleteSistema);
+router.post('/', createSistema as unknown as RequestHandler);
+router.get('/', getSistemas as unknown as RequestHandler);
+router.get('/:id', getSistemaById as unknown as RequestHandler);
+router.put('/:id', updateSistema as unknown as RequestHandler);
+router.patch('/:id', updateSistema as unknown as RequestHandler);
+router.delete('/:id', deleteSistema as unknown as RequestHandler);
 
 export default router;

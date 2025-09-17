@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import { User } from '../models/User';
 import { Sistema } from '../models/Sistema';
 import { UsuarioSistema } from '../models/UsuarioSistema';
+import { Equipment } from '../models/Equipment';
 
 dotenv.config();
 
@@ -14,9 +15,17 @@ export const AppDataSource = new DataSource({
   username: process.env.DB_USER,
   password: process.env.DB_PASS,
   database: process.env.DB_NAME,
-  entities: [User, Sistema, UsuarioSistema],
+  entities: [User, Sistema, UsuarioSistema, Equipment],
+  // We will run structured migrations instead of synchronize in production
   synchronize: false,
-  logging: false
+  logging: false,
+  migrations: [
+    // Only load timestamped migrations (e.g., 1694960000000-Name.js),
+    // excluding legacy ad-hoc scripts in this folder
+    __dirname + '/../migrations/*-*.{js,ts}'
+  ],
+  // Automatically run pending migrations on initialize
+  migrationsRun: true
 });
 
 export const connectDB = async () => {

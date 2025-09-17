@@ -18,7 +18,9 @@ export const authenticateJWT = async (req: Request, res: Response, next: NextFun
       return res.status(401).json({ message: 'Token não fornecido' });
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { id: string, email: string };
+    // Use the same fallback used when signing tokens in authController
+    const secret = process.env.JWT_SECRET || 'secret_default';
+    const decoded = jwt.verify(token, secret) as { id: string, email: string };
     
     req.user = {
       id: decoded.id,
